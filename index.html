@@ -1,0 +1,2419 @@
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#e9f8ed">
+<meta name="description" content="DevisFacture CI : créez vos devis, factures et reçus, calculez vos montants et suivez vos paiements en FCFA.">
+<title>DevisFacture CI | Gestion de devis et factures</title>
+
+<style>
+:root {
+    --green: #248a50;
+    --green-dark: #17663a;
+    --green-light: #e8f7ec;
+    --green-pale: #f5fbf6;
+    --white: #ffffff;
+    --bg: #f4f8f5;
+    --text: #20352a;
+    --muted: #718078;
+    --border: #dce8df;
+    --red: #c63f3f;
+    --orange: #b7791f;
+    --shadow: 0 8px 28px rgba(28, 86, 49, .07);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+button, input, select, textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+    outline: 3px solid #9cddb1;
+    outline-offset: 2px;
+}
+
+a {
+    color: var(--green-dark);
+    text-decoration: none;
+}
+
+.topbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.navbar {
+    max-width: 1440px;
+    margin: auto;
+    padding: 13px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--green-dark);
+    white-space: nowrap;
+}
+
+.brand-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    background: var(--green-light);
+    display: grid;
+    place-items: center;
+    font-size: 23px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+.nav-links button {
+    border: 0;
+    background: transparent;
+    padding: 10px 13px;
+    border-radius: 9px;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.nav-links button:hover,
+.nav-links button.active {
+    background: var(--green-light);
+    color: var(--green-dark);
+}
+
+.container {
+    max-width: 1440px;
+    margin: auto;
+    padding: 30px 24px 50px;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+    animation: appear .2s ease;
+}
+
+@keyframes appear {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.hero {
+    padding: 44px;
+    border-radius: 24px;
+    background: linear-gradient(125deg, #e2f6e7, #ffffff 80%);
+    border: 1px solid #d7eddd;
+    display: grid;
+    grid-template-columns: 1.4fr .8fr;
+    align-items: center;
+    gap: 35px;
+}
+
+.eyebrow {
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+}
+
+.hero h1 {
+    font-size: clamp(30px, 4vw, 49px);
+    line-height: 1.15;
+    margin: 15px 0;
+    letter-spacing: -1.5px;
+}
+
+.hero h1 span {
+    color: var(--green);
+}
+
+.hero p {
+    color: var(--muted);
+    max-width: 600px;
+    font-size: 16px;
+}
+
+.hero-art {
+    min-height: 230px;
+    display: grid;
+    place-items: center;
+}
+
+.paper-illustration {
+    background: white;
+    width: min(100%, 300px);
+    padding: 28px;
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    transform: rotate(2deg);
+    border: 1px solid var(--border);
+}
+
+.paper-line {
+    height: 9px;
+    background: #e5eee7;
+    border-radius: 8px;
+    margin: 13px 0;
+}
+
+.paper-line.short {
+    width: 55%;
+}
+
+.paper-line.medium {
+    width: 75%;
+}
+
+.paper-total {
+    background: var(--green-light);
+    padding: 13px;
+    border-radius: 10px;
+    color: var(--green-dark);
+    font-weight: 800;
+    margin-top: 20px;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.btn {
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 11px 16px;
+    font-weight: 700;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+    transition: .2s;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background: var(--green);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--green-dark);
+}
+
+.btn-secondary {
+    background: white;
+    color: var(--green-dark);
+    border-color: var(--border);
+}
+
+.btn-danger {
+    background: #fff0f0;
+    color: var(--red);
+    border-color: #f3d1d1;
+}
+
+.btn-small {
+    padding: 7px 10px;
+    font-size: 12px;
+}
+
+.section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin: 34px 0 18px;
+}
+
+.section-heading h2,
+.page-title {
+    margin: 0;
+    font-size: 25px;
+    letter-spacing: -.5px;
+}
+
+.section-heading p {
+    margin: 5px 0 0;
+    color: var(--muted);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 17px;
+    margin-top: 25px;
+}
+
+.stat-card,
+.card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    box-shadow: var(--shadow);
+    min-width: 0;
+}
+
+.stat-label {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.stat-value {
+    font-size: 25px;
+    font-weight: 800;
+    margin-top: 9px;
+    overflow-wrap: anywhere;
+}
+
+.stat-icon {
+    font-size: 22px;
+    margin-bottom: 8px;
+}
+
+.quick-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.quick-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 25px;
+    transition: .2s;
+}
+
+.quick-card:hover {
+    border-color: #a4d8b3;
+    transform: translateY(-3px);
+}
+
+.quick-card .icon {
+    font-size: 30px;
+    margin-bottom: 12px;
+}
+
+.quick-card h3 {
+    margin: 0 0 8px;
+}
+
+.quick-card p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.form-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(300px, .7fr);
+    align-items: start;
+    gap: 22px;
+}
+
+.stack {
+    display: grid;
+    gap: 20px;
+}
+
+.card h3 {
+    margin: 0 0 17px;
+    font-size: 17px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.field.full {
+    grid-column: 1 / -1;
+}
+
+.field label {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.field input,
+.field select,
+.field textarea,
+.search-input {
+    width: 100%;
+    min-width: 0;
+    padding: 11px 12px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: white;
+    color: var(--text);
+}
+
+.field textarea {
+    resize: vertical;
+    min-height: 75px;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus,
+.search-input:focus {
+    border-color: var(--green);
+    outline: 2px solid #d5f0dc;
+}
+
+.help {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.table-wrap {
+    overflow-x: auto;
+    width: 100%;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+th, td {
+    text-align: left;
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+}
+
+th {
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    background: var(--green-pale);
+    white-space: nowrap;
+}
+
+td input {
+    width: 100%;
+    min-width: 75px;
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+}
+
+td .designation {
+    min-width: 155px;
+}
+
+.totals {
+    max-width: 390px;
+    margin-left: auto;
+    margin-top: 22px;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 9px 0;
+    font-size: 14px;
+}
+
+.total-row.grand {
+    border-top: 2px solid var(--green);
+    margin-top: 8px;
+    padding-top: 16px;
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--green-dark);
+}
+
+.total-row.balance {
+    background: var(--green-light);
+    padding: 12px;
+    border-radius: 9px;
+    margin-top: 8px;
+    font-weight: 800;
+}
+
+.preview-box {
+    background: #f4f7f5;
+    padding: 16px;
+    border-radius: 12px;
+}
+
+.preview-document {
+    background: white;
+    padding: 25px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+.preview-document h2 {
+    color: var(--green-dark);
+    margin: 0;
+}
+
+.preview-document h3 {
+    font-size: 21px;
+    margin: 15px 0;
+}
+
+.preview-document .preview-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border);
+    padding: 15px 0;
+}
+
+.preview-document table {
+    margin-top: 18px;
+}
+
+.preview-document th {
+    background: var(--green-light);
+}
+
+.preview-document td,
+.preview-document th {
+    padding: 8px 5px;
+}
+
+.preview-document .preview-total {
+    max-width: 260px;
+    margin-left: auto;
+    margin-top: 15px;
+}
+
+.preview-document .preview-total div {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 5px 0;
+}
+
+.preview-document .preview-grand {
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--green-dark);
+    border-top: 1px solid var(--border);
+    padding-top: 10px !important;
+}
+
+.toolbar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.badge-green {
+    background: #e3f7e9;
+    color: #17663a;
+}
+
+.badge-orange {
+    background: #fff4dc;
+    color: #8c5b00;
+}
+
+.badge-red {
+    background: #fde9e9;
+    color: #a22e2e;
+}
+
+.badge-gray {
+    background: #edf0ee;
+    color: #5c6860;
+}
+
+.search-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.search-row .search-input {
+    flex: 1;
+    min-width: 180px;
+}
+
+.empty-state {
+    padding: 35px 15px;
+    text-align: center;
+    color: var(--muted);
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 17px;
+}
+
+.step-number {
+    width: 38px;
+    height: 38px;
+    background: var(--green-light);
+    color: var(--green-dark);
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.info-box {
+    background: var(--green-light);
+    border: 1px solid #d1ebd8;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 13px;
+}
+
+.notice {
+    padding: 12px 14px;
+    background: #fff8e8;
+    color: #795617;
+    border: 1px solid #f1dfb3;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 15px;
+}
+
+.faq-item {
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+}
+
+.faq-item summary {
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.faq-item p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.footer {
+    background: white;
+    border-top: 1px solid var(--border);
+    padding: 25px 24px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.footer-inner {
+    max-width: 1392px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.toast {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    max-width: calc(100% - 40px);
+    background: #173d28;
+    color: white;
+    padding: 14px 18px;
+    border-radius: 11px;
+    box-shadow: var(--shadow);
+    z-index: 100;
+    display: none;
+}
+
+.toast.show {
+    display: block;
+    animation: appear .2s ease;
+}
+
+@media (max-width: 1000px) {
+    .hero {
+        grid-template-columns: 1fr;
+        padding: 30px;
+    }
+
+    .hero-art {
+        display: none;
+    }
+
+    .form-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+    .navbar {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 12px 16px;
+    }
+
+    .nav-links {
+        width: 100%;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+
+    .nav-links button {
+        white-space: nowrap;
+    }
+
+    .container {
+        padding: 20px 14px 35px;
+    }
+
+    .hero {
+        padding: 23px;
+        border-radius: 17px;
+    }
+
+    .hero h1 {
+        font-size: 33px;
+    }
+
+    .stats-grid,
+    .quick-grid,
+    .steps-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-value {
+        font-size: 22px;
+    }
+
+    .card {
+        padding: 16px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .field.full {
+        grid-column: auto;
+    }
+
+    .preview-document {
+        padding: 15px;
+    }
+}
+
+@media print {
+    body {
+        background: white !important;
+        color: #111 !important;
+    }
+
+    body * {
+        visibility: hidden !important;
+    }
+
+    #printDocument,
+    #printDocument * {
+        visibility: visible !important;
+    }
+
+    #printDocument {
+        display: block !important;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: white !important;
+        color: #111 !important;
+        font-size: 11pt !important;
+    }
+
+    #printDocument table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+
+    #printDocument th,
+    #printDocument td {
+        border: 1px solid #ccc !important;
+        padding: 8px !important;
+        color: #111 !important;
+    }
+
+    #printDocument th {
+        background: #e8f7ec !important;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    #printDocument h2 {
+        color: #17663a !important;
+    }
+
+    @page {
+        size: A4;
+        margin: 15mm;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+    <nav class="navbar">
+        <a href="#" class="brand" onclick="showPage('accueil');return false;">
+            <span class="brand-icon">▤</span>
+            <span>DevisFacture <span style="color:#248a50">CI</span></span>
+        </a>
+
+        <div class="nav-links">
+            <button class="active" data-page="accueil" onclick="showPage('accueil')">Accueil</button>
+            <button data-page="creer" onclick="showPage('creer')">Créer un document</button>
+            <button data-page="historique" onclick="showPage('historique')">Historique</button>
+            <button data-page="a-propos" onclick="showPage('a-propos')">À propos</button>
+            <button data-page="contact" onclick="showPage('contact')">Contact</button>
+            <button data-page="faq" onclick="showPage('faq')">FAQ</button>
+        </div>
+    </nav>
+</header>
+
+<main class="container">
+
+<!-- ACCUEIL -->
+<section class="page active" id="page-accueil">
+
+    <div class="hero">
+        <div>
+            <div class="eyebrow">Votre gestion simplifiée</div>
+
+            <h1>Vos devis et factures,<br>
+                <span>en toute simplicité.</span>
+            </h1>
+
+            <p>
+                Créez des documents professionnels en quelques minutes,
+                calculez automatiquement vos montants et suivez vos
+                paiements en francs CFA.
+            </p>
+
+            <div class="actions">
+                <button class="btn btn-primary" onclick="newDocument('Devis')">
+                    ＋ Créer un devis
+                </button>
+
+                <button class="btn btn-secondary" onclick="newDocument('Facture')">
+                    Créer une facture
+                </button>
+
+                <button class="btn btn-secondary" onclick="newDocument('Reçu')">
+                    Créer un reçu
+                </button>
+            </div>
+        </div>
+
+        <div class="hero-art">
+            <div class="paper-illustration">
+                <div style="font-weight:800;color:#17663a;font-size:19px">
+                    DEVISFACTURE CI
+                </div>
+                <div class="paper-line medium"></div>
+                <div class="paper-line"></div>
+                <div class="paper-line short"></div>
+                <div class="paper-line medium"></div>
+                <div class="paper-total">Total : 150 000 FCFA</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">▤</div>
+            <div class="stat-label">Documents enregistrés</div>
+            <div class="stat-value" id="statDocuments">0</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">◷</div>
+            <div class="stat-label">Montant des factures</div>
+            <div class="stat-value" id="statFacture">0 FCFA</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">✓</div>
+            <div class="stat-label">Montants encaissés</div>
+            <div class="stat-value" id="statPaye">0 FCFA</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">↗</div>
+            <div class="stat-label">Soldes à recevoir</div>
+            <div class="stat-value" id="statSolde">0 FCFA</div>
+        </div>
+    </div>
+
+    <div class="section-heading">
+        <div>
+            <h2>Que souhaitez-vous faire ?</h2>
+            <p>Choisissez une action pour commencer.</p>
+        </div>
+    </div>
+
+    <div class="quick-grid">
+        <div class="quick-card">
+            <div class="icon">📄</div>
+            <h3>Créer un devis</h3>
+            <p>Présentez vos prestations et vos prix avant de commencer un travail.</p>
+            <button class="btn btn-secondary" onclick="newDocument('Devis')">Commencer →</button>
+        </div>
+
+        <div class="quick-card">
+            <div class="icon">🧾</div>
+            <h3>Créer une facture</h3>
+            <p>Établissez le récapitulatif des biens ou services facturés.</p>
+            <button class="btn btn-secondary" onclick="newDocument('Facture')">Commencer →</button>
+        </div>
+
+        <div class="quick-card">
+            <div class="icon">💳</div>
+            <h3>Créer un reçu</h3>
+            <p>Conservez une trace du paiement reçu de votre client.</p>
+            <button class="btn btn-secondary" onclick="newDocument('Reçu')">Commencer →</button>
+        </div>
+    </div>
+
+    <div class="section-heading">
+        <div>
+            <h2>Comment ça fonctionne ?</h2>
+            <p>Trois étapes pour produire votre document.</p>
+        </div>
+    </div>
+
+    <div class="steps-grid">
+        <div class="card">
+            <div class="step-number">1</div>
+            <h3>Renseignez les informations</h3>
+            <p class="help">Indiquez vos coordonnées, celles du client et les prestations.</p>
+        </div>
+
+        <div class="card">
+            <div class="step-number">2</div>
+            <h3>Vérifiez les calculs</h3>
+            <p class="help">Le total, la remise, les taxes et le solde se calculent automatiquement.</p>
+        </div>
+
+        <div class="card">
+            <div class="step-number">3</div>
+            <h3>Imprimez votre document</h3>
+            <p class="help">Enregistrez le document en PDF à partir de la fenêtre d'impression.</p>
+        </div>
+    </div>
+
+</section>
+
+<!-- CRÉATION -->
+<section class="page" id="page-creer">
+
+    <div class="section-heading" style="margin-top:0">
+        <div>
+            <h1 class="page-title">Créer un document</h1>
+            <p class="help">Complétez les informations puis vérifiez l'aperçu.</p>
+        </div>
+
+        <button class="btn btn-secondary" onclick="resetForm()">Nouveau document</button>
+    </div>
+
+    <div class="notice">
+        Les documents produits par ce prototype ne sont pas certifiés conformes
+        aux obligations fiscales ivoiriennes. Vérifiez les mentions obligatoires
+        auprès d'une source officielle ou d'un professionnel compétent.
+    </div>
+
+    <div class="form-layout">
+
+        <div class="stack">
+
+            <div class="card">
+                <h3>01. Type et informations générales</h3>
+
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="docType">Type de document *</label>
+                        <select id="docType">
+                            <option value="Devis">Devis</option>
+                            <option value="Facture">Facture</option>
+                            <option value="Reçu">Reçu</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="docNumber">Numéro du document</label>
+                        <input id="docNumber" readonly>
+                    </div>
+
+                    <div class="field">
+                        <label for="docDate">Date d'émission *</label>
+                        <input type="date" id="docDate" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="docDueDate">Date d'échéance</label>
+                        <input type="date" id="docDueDate">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>02. Informations du prestataire</h3>
+
+                <div class="form-grid">
+                    <div class="field full">
+                        <label for="sellerName">Nom commercial ou nom du professionnel *</label>
+                        <input id="sellerName" placeholder="Ex. : Entreprise ABC" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="sellerPhone">Téléphone *</label>
+                        <input id="sellerPhone" type="tel" placeholder="Ex. : 07 00 00 00 00" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="sellerEmail">Adresse e-mail</label>
+                        <input id="sellerEmail" type="email" placeholder="contact@exemple.ci">
+                    </div>
+
+                    <div class="field full">
+                        <label for="sellerAddress">Adresse</label>
+                        <textarea id="sellerAddress" placeholder="Ville, quartier, adresse..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>03. Informations du client</h3>
+
+                <div class="form-grid">
+                    <div class="field full">
+                        <label for="clientName">Nom du client ou raison sociale *</label>
+                        <input id="clientName" placeholder="Nom du client" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="clientPhone">Téléphone</label>
+                        <input id="clientPhone" type="tel" placeholder="Numéro du client">
+                    </div>
+
+                    <div class="field">
+                        <label for="clientAddress">Adresse</label>
+                        <input id="clientAddress" placeholder="Ville ou quartier">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>04. Prestations et produits</h3>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Désignation</th>
+                                <th>Quantité</th>
+                                <th>Prix unitaire (FCFA)</th>
+                                <th>Montant</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="toolbar">
+                    <button class="btn btn-secondary btn-small" onclick="addItem()">
+                        ＋ Ajouter une ligne
+                    </button>
+                </div>
+
+                <div class="form-grid" style="margin-top:20px">
+                    <div class="field">
+                        <label for="discount">Remise (FCFA)</label>
+                        <input type="number" id="discount" min="0" step="1" value="0">
+                    </div>
+
+                    <div class="field">
+                        <label for="taxRate">Taux de taxe (%)</label>
+                        <input type="number" id="taxRate" min="0" max="100" step="0.01" value="0">
+                    </div>
+
+                    <div class="field full">
+                        <label for="paidAmount">Montant déjà payé (FCFA)</label>
+                        <input type="number" id="paidAmount" min="0" step="1" value="0">
+                        <span class="help">Pour un devis, laissez le montant payé à zéro si aucun paiement n'a été reçu.</span>
+                    </div>
+                </div>
+
+                <div class="totals">
+                    <div class="total-row">
+                        <span>Sous-total</span>
+                        <strong id="subtotal">0 FCFA</strong>
+                    </div>
+
+                    <div class="total-row">
+                        <span>Remise</span>
+                        <strong id="discountDisplay">0 FCFA</strong>
+                    </div>
+
+                    <div class="total-row">
+                        <span>Taxes</span>
+                        <strong id="taxDisplay">0 FCFA</strong>
+                    </div>
+
+                    <div class="total-row grand">
+                        <span>Total</span>
+                        <strong id="grandTotal">0 FCFA</strong>
+                    </div>
+
+                    <div class="total-row">
+                        <span>Déjà payé</span>
+                        <strong id="paidDisplay">0 FCFA</strong>
+                    </div>
+
+                    <div class="total-row balance">
+                        <span>Solde restant</span>
+                        <strong id="balanceDisplay">0 FCFA</strong>
+                    </div>
+
+                    <div style="margin-top:12px">
+                        Statut : <span id="paymentStatus" class="badge badge-gray">Non payé</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>05. Notes et conditions</h3>
+
+                <div class="field">
+                    <label for="notes">Informations complémentaires</label>
+                    <textarea id="notes" placeholder="Conditions de paiement, durée de validité du devis, remarques..."></textarea>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>06. Enregistrer et imprimer</h3>
+
+                <div class="info-box">
+                    Vérifiez les informations avant l'enregistrement.
+                    L'impression utilise la fonction d'impression du navigateur,
+                    qui permet également d'enregistrer en PDF.
+                </div>
+
+                <div class="toolbar">
+                    <button class="btn btn-primary" onclick="saveDocument()">Enregistrer le document</button>
+                    <button class="btn btn-secondary" onclick="printDocument()">Imprimer / PDF</button>
+                </div>
+            </div>
+
+        </div>
+
+        <aside class="stack">
+            <div class="card">
+                <h3>Aperçu du document</h3>
+                <p class="help">L'aperçu se met à jour automatiquement pendant la saisie.</p>
+
+                <div class="preview-box">
+                    <div id="printDocument" class="preview-document"></div>
+                </div>
+
+                <div class="toolbar">
+                    <button class="btn btn-primary" style="width:100%" onclick="printDocument()">
+                        Imprimer ou enregistrer en PDF
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Conseil</h3>
+                <p class="help">
+                    Les coordonnées du prestataire sont mémorisées sur cet appareil
+                    après un premier enregistrement. Évite de conserver des données
+                    sensibles pendant les tests.
+                </p>
+            </div>
+        </aside>
+
+    </div>
+
+</section>
+
+<!-- HISTORIQUE -->
+<section class="page" id="page-historique">
+
+    <div class="section-heading" style="margin-top:0">
+        <div>
+            <h1 class="page-title">Historique des documents</h1>
+            <p>Retrouvez les documents enregistrés dans ce navigateur.</p>
+        </div>
+
+        <button class="btn btn-primary" onclick="newDocument('Devis')">＋ Nouveau document</button>
+    </div>
+
+    <div class="card">
+        <div class="search-row">
+            <input class="search-input" id="historySearch"
+                   placeholder="Rechercher par numéro ou nom du client..."
+                   oninput="renderHistory()">
+
+            <select class="search-input" id="historyType" onchange="renderHistory()" style="max-width:200px">
+                <option value="">Tous les types</option>
+                <option value="Devis">Devis</option>
+                <option value="Facture">Facture</option>
+                <option value="Reçu">Reçu</option>
+            </select>
+
+            <select class="search-input" id="historyStatus" onchange="renderHistory()" style="max-width:210px">
+                <option value="">Tous les statuts</option>
+                <option value="Non payé">Non payé</option>
+                <option value="Partiellement payé">Partiellement payé</option>
+                <option value="Payé">Payé</option>
+            </select>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Numéro</th>
+                        <th>Type</th>
+                        <th>Client</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody"></tbody>
+            </table>
+        </div>
+
+        <div id="historyEmpty" class="empty-state" style="display:none">
+            <div style="font-size:35px">📂</div>
+            <h3>Aucun document trouvé</h3>
+            <p>Créez un document ou modifiez votre recherche.</p>
+        </div>
+    </div>
+
+    <div class="notice" style="margin-top:20px">
+        L'historique est local à ce navigateur. L'effacement des données du navigateur
+        peut supprimer les documents. Il n'existe pas encore de sauvegarde en ligne.
+    </div>
+
+</section>
+
+<!-- À PROPOS -->
+<section class="page" id="page-a-propos">
+
+    <div class="card">
+        <div class="eyebrow">Notre mission</div>
+        <h1 class="page-title" style="margin-top:12px">À propos de DevisFacture CI</h1>
+
+        <p>
+            DevisFacture CI est un projet de plateforme de gestion documentaire
+            destiné aux artisans, commerçants, indépendants et petites entreprises
+            en Côte d'Ivoire.
+        </p>
+
+        <p>
+            L'objectif est de simplifier la création des devis, factures et reçus,
+            de réduire les erreurs de calcul et de faciliter le suivi des paiements.
+        </p>
+
+        <h3>Nos objectifs</h3>
+        <ul>
+            <li>Faciliter la création de documents professionnels.</li>
+            <li>Automatiser les calculs des montants.</li>
+            <li>Suivre les paiements reçus et les soldes restants.</li>
+            <li>Permettre l'impression et la conservation des documents.</li>
+            <li>Proposer une interface simple, accessible et adaptée aux besoins locaux.</li>
+        </ul>
+
+        <h3>Notre approche</h3>
+        <p>
+            Le développement commence par un prototype local gratuit.
+            Les comptes utilisateurs, la sauvegarde en ligne et les paiements
+            seront étudiés après les premiers tests auprès des utilisateurs.
+        </p>
+
+        <div class="info-box">
+            DevisFacture CI est encore un prototype. Les documents générés
+            doivent être vérifiés avant toute utilisation professionnelle.
+        </div>
+    </div>
+
+</section>
+
+<!-- CONTACT -->
+<section class="page" id="page-contact">
+
+    <div class="section-heading" style="margin-top:0">
+        <div>
+            <h1 class="page-title">Contact et assistance</h1>
+            <p>Un espace de préparation des demandes de contact.</p>
+        </div>
+    </div>
+
+    <div class="form-layout">
+        <div class="card">
+            <h3>Envoyer une demande</h3>
+
+            <div class="notice">
+                Ce formulaire prépare un message dans votre application de messagerie.
+                Il ne transmet aucune donnée à un serveur.
+            </div>
+
+            <form id="contactForm">
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="contactName">Votre nom *</label>
+                        <input id="contactName" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="contactEmail">Votre e-mail *</label>
+                        <input id="contactEmail" type="email" required>
+                    </div>
+
+                    <div class="field full">
+                        <label for="contactSubject">Objet *</label>
+                        <select id="contactSubject" required>
+                            <option value="Assistance">Demande d'assistance</option>
+                            <option value="Suggestion">Suggestion d'amélioration</option>
+                            <option value="Problème technique">Problème technique</option>
+                            <option value="Autre demande">Autre demande</option>
+                        </select>
+                    </div>
+
+                    <div class="field full">
+                        <label for="contactMessage">Votre message *</label>
+                        <textarea id="contactMessage" required minlength="10"></textarea>
+                    </div>
+
+                    <div class="field full">
+                        <button class="btn btn-primary" type="submit">
+                            Préparer le message
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>À savoir</h3>
+            <p>
+                Les coordonnées officielles de l'éditeur devront être ajoutées
+                avant la publication du site.
+            </p>
+
+            <p class="help">
+                Aucun numéro de téléphone, aucune adresse e-mail et aucun compte
+                de réseau social ne sont inventés dans ce prototype.
+            </p>
+        </div>
+    </div>
+
+</section>
+
+<!-- FAQ -->
+<section class="page" id="page-faq">
+
+    <div class="section-heading" style="margin-top:0">
+        <div>
+            <h1 class="page-title">Questions fréquentes</h1>
+            <p>Les réponses aux principales questions d'utilisation.</p>
+        </div>
+    </div>
+
+    <div class="card">
+
+        <details class="faq-item" open>
+            <summary>Comment créer un devis ?</summary>
+            <p>Ouvrez « Créer un document », sélectionnez « Devis », renseignez le prestataire, le client et les prestations, puis vérifiez le total.</p>
+        </details>
+
+        <details class="faq-item">
+            <summary>Comment créer une facture ?</summary>
+            <p>Sélectionnez « Facture », remplissez les informations nécessaires et enregistrez le document après vérification.</p>
+        </details>
+
+        <details class="faq-item">
+            <summary>Comment créer un reçu ?</summary>
+            <p>Sélectionnez « Reçu », renseignez les informations du paiement et indiquez le montant reçu.</p>
+        </details>
+
+        <details class="faq-item">
+            <summary>Comment enregistrer un document en PDF ?</summary>
+            <p>Cliquez sur « Imprimer / PDF ». Dans la fenêtre d'impression du navigateur, choisissez « Enregistrer au format PDF ».</p>
+        </details>
+
+        <details class="faq-item">
+            <summary>Où sont enregistrés mes documents ?</summary>
+            <p>Ils sont conservés dans le stockage local du navigateur. Ils ne sont pas automatiquement disponibles sur un autre ordinateur ou téléphone.</p>
+        </details>
+
+        <details class="faq-item">
+            <summary>Mes documents sont-ils sauvegardés en ligne ?</summary>
+            <p>Non. La sauvegarde en ligne nécessitera une architecture serveur sécurisée qui sera développée dans une phase ultérieure.</p>
+        </details>
+
+        <details class="faq-item">
+            <summary>Le site fonctionne-t-il sur téléphone ?</summary>
+            <p>Oui, l'interface s'adapte aux écrans de téléphone, de tablette et d'ordinateur.</p>
+        </details>
+
+        <details class="faq-item">
+            <summary>Les factures sont-elles fiscalement conformes en Côte d'Ivoire ?</summary>
+            <p>Cette version ne garantit pas la conformité fiscale. Les mentions obligatoires et les règles applicables doivent être vérifiées auprès des sources officielles ou d'un professionnel compétent.</p>
+        </details>
+
+    </div>
+
+</section>
+
+<!-- CONDITIONS D'UTILISATION -->
+<section class="page" id="page-conditions">
+
+    <div class="card">
+        <h1 class="page-title">Conditions d'utilisation</h1>
+
+        <p>Cette page présente les principes provisoires d'utilisation du prototype DevisFacture CI.</p>
+
+        <h3>1. Objet</h3>
+        <p>Le prototype permet de préparer des devis, factures et reçus, de calculer des montants et de conserver des documents localement.</p>
+
+        <h3>2. Responsabilité de l'utilisateur</h3>
+        <p>L'utilisateur doit vérifier les informations saisies, les montants, les coordonnées des parties et les mentions requises avant de partager ou d'utiliser un document.</p>
+
+        <h3>3. Limites du prototype</h3>
+        <p>Le service ne fournit actuellement ni comptes sécurisés, ni synchronisation en ligne, ni garantie de conformité fiscale.</p>
+
+        <h3>4. Version provisoire</h3>
+        <p>Ces conditions sont un modèle de travail. Elles devront être adaptées et vérifiées avant la mise en ligne publique du service.</p>
+    </div>
+
+</section>
+
+<!-- CONFIDENTIALITÉ -->
+<section class="page" id="page-confidentialite">
+
+    <div class="card">
+        <h1 class="page-title">Politique de confidentialité</h1>
+
+        <p>Cette politique est provisoire et concerne le fonctionnement local du prototype.</p>
+
+        <h3>1. Données saisies</h3>
+        <p>Les coordonnées du prestataire, du client et les informations des documents peuvent être enregistrées dans le stockage local du navigateur.</p>
+
+        <h3>2. Stockage</h3>
+        <p>Les informations restent normalement dans le navigateur utilisé. Elles ne sont pas automatiquement transmises à un serveur par ce prototype.</p>
+
+        <h3>3. Conservation</h3>
+        <p>Les documents restent disponibles tant que le stockage local est conservé. Une suppression des données du navigateur peut entraîner leur perte.</p>
+
+        <h3>4. Précautions</h3>
+        <p>Évitez de conserver des informations sensibles ou confidentielles pendant les tests. Ne partagez pas un appareil utilisé pour ces documents sans précaution.</p>
+
+        <h3>5. Évolution</h3>
+        <p>Avant toute sauvegarde en ligne, cette politique devra préciser les finalités du traitement, la durée de conservation, les mesures de sécurité et les droits applicables.</p>
+    </div>
+
+</section>
+
+<!-- MENTIONS LÉGALES -->
+<section class="page" id="page-mentions">
+
+    <div class="card">
+        <h1 class="page-title">Mentions légales</h1>
+
+        <p>Les informations ci-dessous doivent être complétées avant toute publication officielle.</p>
+
+        <h3>Éditeur du site</h3>
+        <p>Nom ou raison sociale : à compléter.</p>
+        <p>Adresse : à compléter.</p>
+        <p>Coordonnées de contact : à compléter.</p>
+
+        <h3>Hébergement</h3>
+        <p>Hébergeur et coordonnées : à compléter après le choix de l'hébergement.</p>
+
+        <h3>Responsabilité</h3>
+        <p>Le prototype ne garantit pas la conformité fiscale des documents produits. Les informations doivent être vérifiées avant utilisation.</p>
+    </div>
+
+</section>
+
+</main>
+
+<footer class="footer">
+    <div class="footer-inner">
+        <div>
+            <strong style="color:#17663a">DevisFacture CI</strong>
+            <div>Des documents professionnels en toute simplicité.</div>
+            <div>Prototype local — Version 1.0</div>
+        </div>
+
+        <div class="footer-links">
+            <a href="#" onclick="showPage('a-propos');return false;">À propos</a>
+            <a href="#" onclick="showPage('contact');return false;">Contact</a>
+            <a href="#" onclick="showPage('faq');return false;">FAQ</a>
+            <a href="#" onclick="showPage('conditions');return false;">Conditions</a>
+            <a href="#" onclick="showPage('confidentialite');return false;">Confidentialité</a>
+            <a href="#" onclick="showPage('mentions');return false;">Mentions légales</a>
+        </div>
+    </div>
+</footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+/* =====================================================
+   1. CONFIGURATION ET STOCKAGE LOCAL
+===================================================== */
+
+const STORAGE_KEY = "devisfacture_ci_documents_v1";
+const SETTINGS_KEY = "devisfacture_ci_settings_v1";
+
+let editingId = null;
+let toastTimer = null;
+
+const $ = id => document.getElementById(id);
+
+function readDocuments() {
+    try {
+        const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        return Array.isArray(data) ? data : [];
+    } catch (error) {
+        console.error("Lecture de l'historique impossible :", error);
+        return [];
+    }
+}
+
+function writeDocuments(documents) {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
+        return true;
+    } catch (error) {
+        console.error("Enregistrement local impossible :", error);
+        notify("Enregistrement impossible : stockage indisponible ou saturé.");
+        return false;
+    }
+}
+
+function readSettings() {
+    try {
+        return JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}") || {};
+    } catch {
+        return {};
+    }
+}
+
+function writeSettings(settings) {
+    try {
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    } catch (error) {
+        console.warn("Préférences non enregistrées.", error);
+    }
+}
+
+function notify(message) {
+    const toast = $("toast");
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    clearTimeout(toastTimer);
+
+    toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 3500);
+}
+
+/* =====================================================
+   2. NAVIGATION ENTRE LES PAGES
+===================================================== */
+
+const pageTitles = {
+    "accueil": "Accueil",
+    "creer": "Créer un document",
+    "historique": "Historique",
+    "a-propos": "À propos",
+    "contact": "Contact",
+    "faq": "FAQ",
+    "conditions": "Conditions d'utilisation",
+    "confidentialite": "Confidentialité",
+    "mentions": "Mentions légales"
+};
+
+function showPage(name) {
+    const target = $("page-" + name);
+
+    if (!target) {
+        name = "accueil";
+    }
+
+    document.querySelectorAll(".page").forEach(page => {
+        page.classList.remove("active");
+    });
+
+    $("page-" + name).classList.add("active");
+
+    document.querySelectorAll(".nav-links button").forEach(button => {
+        button.classList.toggle("active", button.dataset.page === name);
+    });
+
+    document.title = (pageTitles[name] || "DevisFacture CI") + " | DevisFacture CI";
+
+    if (name === "historique") renderHistory();
+    if (name === "accueil") updateDashboard();
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* =====================================================
+   3. OUTILS DE FORMATAGE ET DE SÉCURITÉ
+===================================================== */
+
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[char]);
+}
+
+function numberValue(value) {
+    const number = Number(value);
+    return Number.isFinite(number) ? Math.max(0, number) : 0;
+}
+
+function money(value) {
+    return new Intl.NumberFormat("fr-FR", {
+        maximumFractionDigits: 0
+    }).format(Math.round(numberValue(value))) + " FCFA";
+}
+
+function dateToday() {
+    const now = new Date();
+    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    return local.toISOString().slice(0, 10);
+}
+
+function formatDate(value) {
+    if (!value) return "—";
+
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+
+    if (!match) return escapeHTML(value);
+
+    return match[3] + "/" + match[2] + "/" + match[1];
+}
+
+function makeId() {
+    if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        return window.crypto.randomUUID();
+    }
+
+    return Date.now().toString(36) + Math.random().toString(36).slice(2);
+}
+
+/* =====================================================
+   4. NUMÉROTATION DES DOCUMENTS
+===================================================== */
+
+function nextDocumentNumber(type) {
+    const prefixes = {
+        "Devis": "DEV",
+        "Facture": "FAC",
+        "Reçu": "REC"
+    };
+
+    const prefix = prefixes[type] || "DOC";
+    const year = new Date().getFullYear();
+
+    const documents = readDocuments();
+
+    const existingNumbers = documents
+        .map(doc => String(doc.number || ""))
+        .filter(number => number.startsWith(prefix + "-" + year + "-"))
+        .map(number => Number(number.split("-").pop()))
+        .filter(Number.isFinite);
+
+    const highest = existingNumbers.length
+        ? Math.max(...existingNumbers)
+        : 0;
+
+    return prefix + "-" + year + "-" + String(highest + 1).padStart(4, "0");
+}
+
+/* =====================================================
+   5. GESTION DES LIGNES DE PRODUITS
+===================================================== */
+
+function addItem(item = {}) {
+    const tbody = $("itemsBody");
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+        <td>
+            <input class="designation"
+                   data-field="designation"
+                   maxlength="250"
+                   placeholder="Prestation ou produit">
+        </td>
+        <td>
+            <input data-field="quantity"
+                   type="number"
+                   min="0.01"
+                   step="any"
+                   value="1"
+                   aria-label="Quantité">
+        </td>
+        <td>
+            <input data-field="price"
+                   type="number"
+                   min="0"
+                   step="1"
+                   value="0"
+                   aria-label="Prix unitaire">
+        </td>
+        <td class="line-total">0 FCFA</td>
+        <td>
+            <button type="button"
+                    class="btn btn-danger btn-small"
+                    aria-label="Supprimer cette ligne">×</button>
+        </td>
+    `;
+
+    row.querySelector('[data-field="designation"]').value = item.designation || "";
+    row.querySelector('[data-field="quantity"]').value =
+        item.quantity ?? 1;
+    row.querySelector('[data-field="price"]').value =
+        item.price ?? 0;
+
+    row.querySelectorAll("input").forEach(input => {
+        input.addEventListener("input", calculate);
+    });
+
+    row.querySelector("button").addEventListener("click", () => {
+        row.remove();
+
+        if (!$("itemsBody").children.length) {
+            addItem();
+        }
+
+        calculate();
+    });
+
+    tbody.appendChild(row);
+    calculate();
+}
+
+function collectItems() {
+    return [...$("itemsBody").querySelectorAll("tr")].map(row => {
+        const designation = row.querySelector('[data-field="designation"]').value.trim();
+
+        const rawQuantity = row.querySelector('[data-field="quantity"]').value;
+        const rawPrice = row.querySelector('[data-field="price"]').value;
+
+        const quantity = rawQuantity === "" ? 0 : numberValue(rawQuantity);
+        const price = rawPrice === "" ? 0 : numberValue(rawPrice);
+
+        return {
+            designation,
+            quantity,
+            price,
+            total: Math.round(quantity * price)
+        };
+    });
+}
+
+/* =====================================================
+   6. CALCULS AUTOMATIQUES
+===================================================== */
+
+function calculate() {
+    const items = collectItems();
+
+    const subtotal = items.reduce((sum, item) => sum + item.total, 0);
+
+    const discount = Math.min(
+        subtotal,
+        numberValue($("discount").value)
+    );
+
+    const taxableAmount = Math.max(0, subtotal - discount);
+
+    const taxRate = Math.min(
+        100,
+        numberValue($("taxRate").value)
+    );
+
+    const tax = Math.round(taxableAmount * taxRate / 100);
+
+    const total = taxableAmount + tax;
+
+    const paid = numberValue($("paidAmount").value);
+    const balance = Math.max(0, total - paid);
+
+    const status = paid >= total && total > 0
+        ? "Payé"
+        : paid > 0
+            ? "Partiellement payé"
+            : "Non payé";
+
+    $("subtotal").textContent = money(subtotal);
+    $("discountDisplay").textContent = money(discount);
+    $("taxDisplay").textContent = money(tax);
+    $("grandTotal").textContent = money(total);
+    $("paidDisplay").textContent = money(paid);
+    $("balanceDisplay").textContent = money(balance);
+
+    const badge = $("paymentStatus");
+
+    badge.textContent = status;
+    badge.className = "badge " + (
+        status === "Payé"
+            ? "badge-green"
+            : status === "Partiellement payé"
+                ? "badge-orange"
+                : "badge-red"
+    );
+
+    $("itemsBody").querySelectorAll("tr").forEach((row, index) => {
+        row.querySelector(".line-total").textContent =
+            money(items[index]?.total || 0);
+    });
+
+    renderPreview();
+}
+
+/* =====================================================
+   7. COLLECTE DES INFORMATIONS DU FORMULAIRE
+===================================================== */
+
+function collectForm() {
+    const items = collectItems();
+
+    const subtotal = items.reduce((sum, item) => sum + item.total, 0);
+
+    const discount = Math.min(
+        subtotal,
+        numberValue($("discount").value)
+    );
+
+    const taxRate = Math.min(
+        100,
+        numberValue($("taxRate").value)
+    );
+
+    const tax = Math.round((subtotal - discount) * taxRate / 100);
+    const total = subtotal - discount + tax;
+
+    const paid = Math.min(
+        total,
+        numberValue($("paidAmount").value)
+    );
+
+    const status = paid >= total && total > 0
+        ? "Payé"
+        : paid > 0
+            ? "Partiellement payé"
+            : "Non payé";
+
+    return {
+        id: editingId || makeId(),
+        number: $("docNumber").value,
+        type: $("docType").value,
+        date: $("docDate").value,
+        dueDate: $("docDueDate").value,
+
+        seller: {
+            name: $("sellerName").value.trim(),
+            phone: $("sellerPhone").value.trim(),
+            email: $("sellerEmail").value.trim(),
+            address: $("sellerAddress").value.trim()
+        },
+
+        client: {
+            name: $("clientName").value.trim(),
+            phone: $("clientPhone").value.trim(),
+            address: $("clientAddress").value.trim()
+        },
+
+        items,
+        subtotal,
+        discount,
+        taxRate,
+        tax,
+        total,
+        paid,
+        balance: Math.max(0, total - paid),
+        status,
+        notes: $("notes").value.trim(),
+        updatedAt: new Date().toISOString()
+    };
+}
+
+/* =====================================================
+   8. APERÇU DU DOCUMENT
+===================================================== */
+
+function renderPreview() {
+    const doc = collectForm();
+
+    const itemRows = doc.items.map(item => `
+        <tr>
+            <td>${escapeHTML(item.designation || "—")}</td>
+            <td>${escapeHTML(item.quantity)}</td>
+            <td>${money(item.price)}</td>
+            <td>${money(item.total)}</td>
+        </tr>
+    `).join("");
+
+    const notesHTML = doc.notes
+        ? `<p style="margin-top:20px"><strong>Notes :</strong><br>${escapeHTML(doc.notes).replace(/\n/g, "<br>")}</p>`
+        : "";
+
+    $("printDocument").innerHTML = `
+        <div style="display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap">
+            <div>
+                <h2>DevisFacture CI</h2>
+                <div>${escapeHTML(doc.seller.name || "Nom du prestataire")}</div>
+                <div>${escapeHTML(doc.seller.address || "")}</div>
+                <div>${escapeHTML(doc.seller.phone || "")}</div>
+                <div>${escapeHTML(doc.seller.email || "")}</div>
+            </div>
+
+            <div style="text-align:right">
+                <h3>${escapeHTML(doc.type.toUpperCase())}</h3>
+                <div><strong>N° :</strong> ${escapeHTML(doc.number)}</div>
+                <div><strong>Date :</strong> ${formatDate(doc.date)}</div>
+                ${doc.dueDate ? `<div><strong>Échéance :</strong> ${formatDate(doc.dueDate)}</div>` : ""}
+            </div>
+        </div>
+
+        <div class="preview-meta">
+            <div>
+                <strong>CLIENT</strong>
+                <div>${escapeHTML(doc.client.name || "Nom du client")}</div>
+                <div>${escapeHTML(doc.client.phone || "")}</div>
+                <div>${escapeHTML(doc.client.address || "")}</div>
+            </div>
+
+            <div>
+                <strong>PAIEMENT</strong>
+                <div>${escapeHTML(doc.status)}</div>
+                <div>Déjà payé : ${money(doc.paid)}</div>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Désignation</th>
+                    <th>Qté</th>
+                    <th>Prix unitaire</th>
+                    <th>Montant</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                ${itemRows || `<tr><td colspan="4">Aucune prestation ajoutée.</td></tr>`}
+            </tbody>
+        </table>
+
+        <div class="preview-total">
+            <div><span>Sous-total</span><strong>${money(doc.subtotal)}</strong></div>
+            <div><span>Remise</span><strong>${money(doc.discount)}</strong></div>
+            <div><span>Taxe (${doc.taxRate} %)</span><strong>${money(doc.tax)}</strong></div>
+            <div class="preview-grand"><span>Total</span><strong>${money(doc.total)}</strong></div>
+            <div><span>Payé</span><strong>${money(doc.paid)}</strong></div>
+            <div><span>Solde</span><strong>${money(doc.balance)}</strong></div>
+        </div>
+
+        ${notesHTML}
+
+        <div style="margin-top:35px;border-top:1px solid #ddd;padding-top:12px;color:#666">
+            Document généré avec DevisFacture CI.
+            Vérifiez les mentions légales et fiscales applicables avant utilisation.
+        </div>
+    `;
+}
+
+/* =====================================================
+   9. VALIDATION ET ENREGISTREMENT
+===================================================== */
+
+function validateForm(doc) {
+    if (!doc.seller.name) {
+        notify("Veuillez renseigner le nom du prestataire.");
+        $("sellerName").focus();
+        return false;
+    }
+
+    if (!doc.seller.phone) {
+        notify("Veuillez renseigner le téléphone du prestataire.");
+        $("sellerPhone").focus();
+        return false;
+    }
+
+    if (!doc.client.name) {
+        notify("Veuillez renseigner le nom du client.");
+        $("clientName").focus();
+        return false;
+    }
+
+    if (!doc.date) {
+        notify("Veuillez sélectionner la date du document.");
+        $("docDate").focus();
+        return false;
+    }
+
+    if (doc.dueDate && doc.dueDate < doc.date) {
+        notify("La date d'échéance ne peut pas précéder la date d'émission.");
+        $("docDueDate").focus();
+        return false;
+    }
+
+    if (!doc.items.length || !doc.items.some(item =>
+        item.designation && item.quantity > 0
+    )) {
+        notify("Ajoutez au moins une prestation avec une quantité valide.");
+        return false;
+    }
+
+    if (doc.items.some(item =>
+        !item.designation || item.quantity <= 0
+    )) {
+        notify("Chaque ligne doit avoir une désignation et une quantité positive.");
+        return false;
+    }
+
+    if (numberValue($("paidAmount").value) > doc.total) {
+        notify("Le montant payé ne peut pas dépasser le total.");
+        $("paidAmount").focus();
+        return false;
+    }
+
+    return true;
+}
+
+function saveDocument() {
+    const doc = collectForm();
+
+    if (!validateForm(doc)) return;
+
+    const documents = readDocuments();
+    const index = documents.findIndex(item => item.id === doc.id);
+
+    if (index >= 0) {
+        documents[index] = doc;
+    } else {
+        documents.unshift(doc);
+    }
+
+    if (!writeDocuments(documents)) return;
+
+    writeSettings({
+        seller: doc.seller
+    });
+
+    editingId = doc.id;
+
+    updateDashboard();
+    renderHistory();
+
+    notify("Document enregistré avec succès.");
+}
+
+/* =====================================================
+   10. RÉINITIALISATION ET NOUVEAU DOCUMENT
+===================================================== */
+
+function resetForm() {
+    editingId = null;
+
+    const settings = readSettings();
+    const seller = settings.seller || {};
+
+    $("docType").value = "Devis";
+    $("docNumber").value = nextDocumentNumber("Devis");
+    $("docDate").value = dateToday();
+    $("docDueDate").value = "";
+
+    $("sellerName").value = seller.name || "";
+    $("sellerPhone").value = seller.phone || "";
+    $("sellerEmail").value = seller.email || "";
+    $("sellerAddress").value = seller.address || "";
+
+    $("clientName").value = "";
+    $("clientPhone").value = "";
+    $("clientAddress").value = "";
+
+    $("discount").value = 0;
+    $("taxRate").value = 0;
+    $("paidAmount").value = 0;
+    $("notes").value = "";
+
+    $("itemsBody").innerHTML = "";
+    addItem();
+
+    calculate();
+}
+
+function newDocument(type = "Devis") {
+    resetForm();
+
+    $("docType").value = type;
+    $("docNumber").value = nextDocumentNumber(type);
+
+    calculate();
+    showPage("creer");
+}
+
+$("docType").addEventListener("change", () => {
+    if (!editingId) {
+        $("docNumber").value = nextDocumentNumber($("docType").value);
+    }
+
+    calculate();
+});
+
+/* =====================================================
+   11. CHARGEMENT D'UN DOCUMENT POUR MODIFICATION
+===================================================== */
+
+function editDocument(id) {
+    const doc = readDocuments().find(item => item.id === id);
+
+    if (!doc) {
+        notify("Document introuvable.");
+        return;
+    }
+
+    editingId = doc.id;
+
+    $("docType").value = doc.type;
+    $("docNumber").value = doc.number;
+    $("docDate").value = doc.date;
+    $("docDueDate").value = doc.dueDate || "";
+
+    $("sellerName").value = doc.seller?.name || "";
+    $("sellerPhone").value = doc.seller?.phone || "";
+    $("sellerEmail").value = doc.seller?.email || "";
+    $("sellerAddress").value = doc.seller?.address || "";
+
+    $("clientName").value = doc.client?.name || "";
+    $("clientPhone").value = doc.client?.phone || "";
+    $("clientAddress").value = doc.client?.address || "";
+
+    $("discount").value = doc.discount || 0;
+    $("taxRate").value = doc.taxRate || 0;
+    $("paidAmount").value = doc.paid || 0;
+    $("notes").value = doc.notes || "";
+
+    $("itemsBody").innerHTML = "";
+
+    (doc.items || []).forEach(item => addItem(item));
+
+    if (!doc.items?.length) addItem();
+
+    calculate();
+    showPage("creer");
+
+    notify("Document chargé. Enregistrez après vos modifications.");
+}
+
+/* =====================================================
+   12. SUPPRESSION D'UN DOCUMENT
+===================================================== */
+
+function deleteDocument(id) {
+    const documents = readDocuments();
+    const doc = documents.find(item => item.id === id);
+
+    if (!doc) return;
+
+    const confirmed = confirm(
+        "Supprimer définitivement le document " + doc.number + " ?"
+    );
+
+    if (!confirmed) return;
+
+    const remaining = documents.filter(item => item.id !== id);
+
+    if (!writeDocuments(remaining)) return;
+
+    if (editingId === id) {
+        resetForm();
+    }
+
+    renderHistory();
+    updateDashboard();
+
+    notify("Document supprimé.");
+}
+
+/* =====================================================
+   13. HISTORIQUE ET RECHERCHE
+===================================================== */
+
+function statusBadge(status) {
+    const css = status === "Payé"
+        ? "badge-green"
+        : status === "Partiellement payé"
+            ? "badge-orange"
+            : "badge-red";
+
+    return `<span class="badge ${css}">${escapeHTML(status)}</span>`;
+}
+
+function renderHistory() {
+    const query = $("historySearch").value.trim().toLowerCase();
+    const type = $("historyType").value;
+    const status = $("historyStatus").value;
+
+    const documents = readDocuments().filter(doc => {
+        const matchesQuery =
+            String(doc.number || "").toLowerCase().includes(query) ||
+            String(doc.client?.name || "").toLowerCase().includes(query) ||
+            String(doc.type || "").toLowerCase().includes(query);
+
+        const matchesType = !type || doc.type === type;
+        const matchesStatus = !status || doc.status === status;
+
+        return matchesQuery && matchesType && matchesStatus;
+    });
+
+    const tbody = $("historyBody");
+    tbody.innerHTML = "";
+
+    documents.forEach(doc => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td><strong>${escapeHTML(doc.number)}</strong></td>
+            <td>${escapeHTML(doc.type)}</td>
+            <td>${escapeHTML(doc.client?.name || "—")}</td>
+            <td>${formatDate(doc.date)}</td>
+            <td><strong>${money(doc.total)}</strong></td>
+            <td>${statusBadge(doc.status)}</td>
+            <td>
+                <div style="display:flex;gap:5px;flex-wrap:wrap">
+                    <button class="btn btn-secondary btn-small" data-action="edit">Modifier</button>
+                    <button class="btn btn-secondary btn-small" data-action="print">PDF</button>
+                    <button class="btn btn-danger btn-small" data-action="delete">Supprimer</button>
+                </div>
+            </td>
+        `;
+
+        row.querySelector('[data-action="edit"]').addEventListener("click", () => {
+            editDocument(doc.id);
+        });
+
+        row.querySelector('[data-action="print"]').addEventListener("click", () => {
+            editDocument(doc.id);
+
+            setTimeout(() => {
+                printDocument();
+            }, 100);
+        });
+
+        row.querySelector('[data-action="delete"]').addEventListener("click", () => {
+            deleteDocument(doc.id);
+        });
+
+        tbody.appendChild(row);
+    });
+
+    $("historyEmpty").style.display = documents.length ? "none" : "block";
+}
+
+/* =====================================================
+   14. TABLEAU DE BORD
+===================================================== */
+
+function updateDashboard() {
+    const documents = readDocuments();
+
+    const invoices = documents.filter(doc => doc.type === "Facture");
+
+    const invoiceTotal = invoices.reduce(
+        (sum, doc) => sum + numberValue(doc.total), 0
+    );
+
+    const paidTotal = invoices.reduce(
+        (sum, doc) => sum + numberValue(doc.paid), 0
+    );
+
+    const balanceTotal = invoices.reduce(
+        (sum, doc) => sum + numberValue(doc.balance), 0
+    );
+
+    $("statDocuments").textContent = documents.length;
+    $("statFacture").textContent = money(invoiceTotal);
+    $("statPaye").textContent = money(paidTotal);
+    $("statSolde").textContent = money(balanceTotal);
+}
+
+/* =====================================================
+   15. IMPRESSION ET EXPORT PDF
+===================================================== */
+
+function printDocument() {
+    const doc = collectForm();
+
+    if (!validateForm(doc)) return;
+
+    renderPreview();
+
+    window.print();
+}
+
+/* =====================================================
+   16. FORMULAIRE DE CONTACT
+===================================================== */
+
+$("contactForm").addEventListener("submit", event => {
+    event.preventDefault();
+
+    const name = $("contactName").value.trim();
+    const email = $("contactEmail").value.trim();
+    const subject = $("contactSubject").value;
+    const message = $("contactMessage").value.trim();
+
+    if (!name || !email || !subject || message.length < 10) {
+        notify("Veuillez compléter correctement tous les champs.");
+        return;
+    }
+
+    const body = [
+        "Nom : " + name,
+        "E-mail : " + email,
+        "",
+        message
+    ].join("\n");
+
+    const mailto = "mailto:?subject=" +
+        encodeURIComponent("[DevisFacture CI] " + subject) +
+        "&body=" + encodeURIComponent(body);
+
+    window.location.href = mailto;
+});
+
+/* =====================================================
+   17. INITIALISATION
+===================================================== */
+
+["discount", "taxRate", "paidAmount"].forEach(id => {
+    $(id).addEventListener("input", calculate);
+});
+
+resetForm();
+updateDashboard();
+renderHistory();
+
+</script>
+
+</body>
+</html>
+```
